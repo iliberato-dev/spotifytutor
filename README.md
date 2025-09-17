@@ -190,12 +190,14 @@ Adotei padrões modernos:
 **URL:** [https://squoosh.app/](https://squoosh.app/)
 
 **Processo aplicado:**
+
 - **Compressão inteligente** de imagens PNG/JPG
 - **Conversão para formatos modernos** quando apropriado
 - **Redução de tamanho** mantendo qualidade visual
 - **Otimização para diferentes resoluções** (1x, 2x, 3x)
 
 **Resultados obtidos:**
+
 - **Redução significativa** no tamanho dos arquivos
 - **Melhoria na performance** de carregamento
 - **Manutenção da qualidade visual** em todas as resoluções
