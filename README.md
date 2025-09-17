@@ -4,7 +4,7 @@ Uma aplicação web moderna e responsiva que ensina jovens como criar playlists 
 
 ## 🚀 Demonstração
 
-- **URL da Aplicação:** [Em breve - será publicado no Vercel/Netlify]
+- **URL da Aplicação:** [[Em breve - será publicado no Vercel/Netlify](https://spotifytutor.vercel.app/)]
 - **Repositório:** [https://github.com/iliberato-dev/spotifytutor](https://github.com/iliberato-dev/spotifytutor)
 
 ## 📋 Sobre o Projeto
