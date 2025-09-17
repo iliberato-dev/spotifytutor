@@ -44,11 +44,7 @@ function initializeApp() {
   window.practiceLesson = practiceLesson;
   window.completeLesson = completeLesson;
   window.checkAnswer = checkAnswer;
-  window.nextQuestion = nextQuestion;
-  window.playAudio = playAudio;
-  window.resetQuiz = resetQuiz;
   window.searchArtists = searchArtists;
-  window.playRandomPlaylist = playRandomPlaylist;
 }
 
 function setupEventListeners() {
@@ -142,10 +138,8 @@ function setupNavigation() {
   // Configurar botão hambúrguer
   const hamburgerBtn = document.querySelector(".hamburger-btn");
   if (hamburgerBtn) {
-    console.log("Botão hambúrguer encontrado, configurando evento...");
     hamburgerBtn.addEventListener("click", (e) => {
       e.preventDefault();
-      console.log("Clique no hambúrguer detectado!");
       toggleMobileMenu();
     });
   } else {
@@ -188,7 +182,6 @@ function updateThemeIcon() {
 
 // ===== SISTEMA DE MENU MOBILE =====
 function toggleMobileMenu() {
-  console.log("toggleMobileMenu chamado");
   const hamburgerBtn = document.querySelector(".hamburger-btn");
   const mobileMenu = document.querySelector(".mobile-menu");
   const body = document.body;
@@ -202,7 +195,6 @@ function toggleMobileMenu() {
   }
 
   const isOpen = mobileMenu.classList.contains("active");
-  console.log("Menu está aberto:", isOpen);
 
   if (isOpen) {
     closeMobileMenu();
@@ -212,7 +204,6 @@ function toggleMobileMenu() {
 }
 
 function openMobileMenu() {
-  console.log("openMobileMenu chamado");
   const hamburgerBtn = document.querySelector(".hamburger-btn");
   const mobileMenu = document.querySelector(".mobile-menu");
   const body = document.body;
@@ -223,11 +214,9 @@ function openMobileMenu() {
 
   // Prevenir scroll do body quando menu está aberto
   body.style.overflow = "hidden";
-  console.log("Menu mobile aberto");
 }
 
 function closeMobileMenu() {
-  console.log("closeMobileMenu chamado");
   const hamburgerBtn = document.querySelector(".hamburger-btn");
   const mobileMenu = document.querySelector(".mobile-menu");
   const body = document.body;
@@ -238,7 +227,6 @@ function closeMobileMenu() {
 
   // Restaurar scroll do body
   body.style.overflow = "";
-  console.log("Menu mobile fechado");
 }
 
 // ===== SISTEMA DE EXERCÍCIOS =====
@@ -634,7 +622,8 @@ function arraysEqual(a, b) {
 // ===== INTEGRAÇÃO COM MUSICBRAINZ API =====
 // Esta seção implementa a integração com a API MusicBrainz para carregar dados dinâmicos
 
-const MUSICBRAINZ_BASE_URL = "https://musicbrainz.org/ws/2";
+// Base URL da API Vagalume
+const VAGALUME_BASE_URL = "https://api.vagalume.com.br";
 
 // Função para embaralhar array (Fisher-Yates shuffle)
 function shuffleArray(array) {
@@ -646,7 +635,12 @@ function shuffleArray(array) {
   return shuffled;
 }
 
-// Função para buscar artistas brasileiros na API MusicBrainz
+// Função para buscar artistas (chama a função principal)
+function searchArtists() {
+  fetchBrazilianArtists();
+}
+
+// Função para buscar artistas brasileiros na API Vagalume
 async function fetchBrazilianArtists() {
   const loadingElement = document.getElementById("api-loading");
   const resultsContainer = document.getElementById("api-results");
@@ -671,57 +665,109 @@ async function fetchBrazilianArtists() {
     if (errorElement) errorElement.style.display = "none";
     if (searchBtn) {
       searchBtn.disabled = true;
-      searchBtn.textContent = "🔄 Buscando novos artistas...";
+      searchBtn.textContent = "🔄 Buscando artistas brasileiros...";
     }
 
-    // Gerar offset aleatório para obter artistas diferentes a cada busca
-    const randomOffset = Math.floor(Math.random() * 300);
-
-    // Estratégias de busca simplificadas
-    const searchStrategies = [
-      "country:BR AND type:group",
-      "country:BR AND type:person",
-      "area:Brazil",
-      'area:"São Paulo"',
-      'area:"Rio de Janeiro"',
+    // Lista de artistas brasileiros famosos para buscar no Vagalume
+    const brazilianArtists = [
+      "caetano-veloso", "gilberto-gil", "chico-buarque", "maria-bethania",
+      "gal-costa", "elis-regina", "tom-jobim", "vinicius-de-moraes",
+      "milton-nascimento", "djavan", "cazuza", "rita-lee", "raul-seixas",
+      "roberto-carlos", "ivete-sangalo", "claudia-leitte", "anitta",
+      "pabllo-vittar", "luiza-sonza", "jorge-ben-jor", "marisa-monte",
+      "legiao-urbana", "capital-inicial", "skank", "charlie-brown-jr",
+      "titas", "sepultura", "jota-quest", "nx-zero", "fresno",
+      "natiruts", "o-rappa", "cidade-negra", "raimundos", "paralamas-do-sucesso",
+      "kid-abelha", "los-hermanos", "engenheiros-do-hawaii", "ira",
+      "ultraje-a-rigor", "biquini-cavadao", "plebe-rude", "capital-inicial",
+      "mc-kevinho", "mc-hariel", "ludmilla", "simone-e-simaria",
+      "maiara-e-maraisa", "henrique-e-juliano", "jorge-e-mateus",
+      "gusttavo-lima", "wesley-safadao", "xand-aviao"
     ];
 
-    const randomStrategy =
-      searchStrategies[Math.floor(Math.random() * searchStrategies.length)];
-    const url = `${MUSICBRAINZ_BASE_URL}/artist/?query=${encodeURIComponent(
-      randomStrategy
-    )}&fmt=json&limit=8&offset=${randomOffset}`;
+    // Embaralhar e pegar 8 artistas aleatórios
+    const shuffledArtists = shuffleArray([...brazilianArtists]);
+    const selectedArtists = shuffledArtists.slice(0, 8);
 
-    // Rate limiting
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    // Buscar informações de cada artista
+    const artistPromises = selectedArtists.map(async (artistSlug) => {
+      try {
+        const url = `https://www.vagalume.com.br/${artistSlug}/index.js`;
+        
+        const response = await fetch(url);
+        if (!response.ok) {
+          return null;
+        }
 
-    const response = await fetch(url, {
-      headers: {
-        "User-Agent": "SpotifyTutor/1.0 (educational app)",
-        Accept: "application/json",
-      },
+        const data = await response.json();
+        
+        if (data.artist) {
+          // Construir URLs completas para as imagens
+          let picMedium = null;
+          let picSmall = null;
+          
+          if (data.artist.pic_medium) {
+            // Se a URL já é absoluta, usar como está
+            if (data.artist.pic_medium.startsWith('http')) {
+              picMedium = data.artist.pic_medium;
+            } else {
+              // Se é relativa, construir URL completa
+              picMedium = `https://www.vagalume.com.br${data.artist.pic_medium}`;
+            }
+          }
+          
+          if (data.artist.pic_small) {
+            // Se a URL já é absoluta, usar como está
+            if (data.artist.pic_small.startsWith('http')) {
+              picSmall = data.artist.pic_small;
+            } else {
+              // Se é relativa, construir URL completa
+              picSmall = `https://www.vagalume.com.br${data.artist.pic_small}`;
+            }
+          }
+          
+          return {
+            id: data.artist.id || artistSlug,
+            name: data.artist.desc || artistSlug.replace(/-/g, ' '),
+            type: "Artista",
+            score: data.artist.rank ? data.artist.rank.points : Math.floor(Math.random() * 100) + 1,
+            area: { name: "Brasil" },
+            disambiguation: data.artist.genre && data.artist.genre.length > 0 ? 
+              `Gênero: ${data.artist.genre.map(g => g.name).join(', ')}` : "",
+            "life-span": null,
+            // Dados específicos do Vagalume
+            vagalume_id: data.artist.id,
+            pic_medium: picMedium,
+            pic_small: picSmall,
+            genre: data.artist.genre ? data.artist.genre.map(g => g.name).join(', ') : "",
+            url: `https://www.vagalume.com.br${data.artist.url}`,
+            views: data.artist.rank ? data.artist.rank.views : null,
+            rank_position: data.artist.rank ? data.artist.rank.pos : null
+          };
+        }
+        
+        return null;
+      } catch (error) {
+        console.log(`❌ Erro ao buscar ${artistSlug}:`, error);
+        return null;
+      }
     });
 
-    if (!response.ok) {
-      throw new Error(`Erro HTTP: ${response.status}`);
-    }
+    // Aguardar todas as buscas
+    const artistResults = await Promise.all(artistPromises);
+    
+    // Filtrar resultados válidos
+    const validArtists = artistResults.filter(artist => artist !== null);
 
-    const data = await response.json();
-
-    // Processar e exibir resultados
-    if (data.artists && data.artists.length > 0) {
-      // Embaralhar a ordem dos artistas para mais aleatoriedade
-      const shuffledArtists = shuffleArray([...data.artists]);
-
-      displayArtistResults(shuffledArtists);
+    if (validArtists.length > 0) {
+      displayArtistResults(validArtists);
       appState.exercises[4].completed = true;
-      // Não salvar no cache para permitir novos resultados a cada clique
-      appState.exercises[4].apiData = [];
-      saveProgress(); // Salvar progresso
+      saveProgress();
     } else {
-      throw new Error("Nenhum artista encontrado");
+      showAPIDemo();
     }
   } catch (error) {
+    console.error("❌ Erro ao buscar artistas no Vagalume:", error);
     // Se falhar a API, mostrar artistas de exemplo
     showAPIDemo();
   } finally {
@@ -741,8 +787,9 @@ function displayArtistResults(artists) {
   const headerElement = document.createElement("div");
   headerElement.className = "api-results-header";
   headerElement.innerHTML = `
-    <h4>🎲 Artistas Descobertos (${artists.length} encontrados)</h4>
-    <p>Clique novamente no botão para descobrir outros artistas brasileiros!</p>
+    <h4>�🇷 Artistas Brasileiros Descobertos (${artists.length} encontrados)</h4>
+    <p>Powered by <strong>Vagalume API</strong> - A maior base de música brasileira! 🎵</p>
+    <p>Clique novamente no botão para descobrir outros artistas!</p>
   `;
   resultsContainer.appendChild(headerElement);
 
@@ -761,18 +808,51 @@ function displayArtistResults(artists) {
 
 // Função para criar card de artista
 function createArtistCard(artist, index) {
+
   const card = document.createElement("div");
   card.className = "artist-card";
+
+  // Buscar imagem do artista na API Vagalume ou usar dados já disponíveis
+  fetchArtistImageFromVagalume(artist.name, artist).then(imageUrl => {
+    const imgElement = card.querySelector('.artist-img');
+    if (imageUrl && imgElement) {
+      // Testar se a imagem carrega antes de substituir
+      const testImg = new Image();
+      testImg.onload = function() {
+        imgElement.src = imageUrl;
+        imgElement.alt = `Foto de ${escapeHtml(artist.name)}`;
+      };
+      testImg.onerror = function() {
+        // Manter avatar em caso de erro
+      };
+      testImg.src = imageUrl;
+    }
+  }).catch(() => {
+    // Usar avatar padrão
+  });
+
+  // Gerar avatar personalizado baseado no nome do artista
+  const avatarUrl = generateAvatarForBrazilianArtist(artist.name);
+
+  // Construir todo o HTML do card de uma vez
   card.innerHTML = `
+    <div class="artist-img-container">
+      <img class="artist-img" src="${avatarUrl}" alt="Avatar de ${escapeHtml(artist.name)}">
+    </div>
     <div class="artist-card-header">
       <h4 class="artist-name">${escapeHtml(artist.name)}</h4>
       <span class="artist-score">Score: ${artist.score || "N/A"}</span>
     </div>
     <div class="artist-details">
-      <p><strong>Tipo:</strong> ${artist.type || "Não informado"}</p>
+      <p><strong>Tipo:</strong> ${artist.type || "Artista"}</p>
       ${
         artist.area
           ? `<p><strong>Área:</strong> ${escapeHtml(artist.area.name)}</p>`
+          : ""
+      }
+      ${
+        artist.genre
+          ? `<p><strong>Gênero:</strong> ${escapeHtml(artist.genre)}</p>`
           : ""
       }
       ${
@@ -789,19 +869,279 @@ function createArtistCard(artist, index) {
       }
     </div>
     <div class="artist-actions">
-      <a href="https://musicbrainz.org/artist/${
-        artist.id
-      }" target="_blank" class="view-more-btn">
-        Ver no MusicBrainz
-      </a>
+      <button class="btn btn-player" onclick="showVagalumePlayer('${escapeHtml(artist.name)}', '${artist.id || ''}')">
+        🎵 Ouvir Músicas
+      </button>
+      ${
+        artist.url
+          ? `<a href="${artist.url}" target="_blank" class="view-more-btn">
+              Ver no Vagalume
+            </a>`
+          : `<a href="https://www.vagalume.com.br/browse/artists/${encodeURIComponent(artist.name.charAt(0).toLowerCase())}.html" target="_blank" class="view-more-btn">
+              Buscar no Vagalume
+            </a>`
+      }
     </div>
   `;
 
   // Adicionar animação
+  // Adicionar animação
   card.style.animationDelay = `${index * 0.1}s`;
 
   return card;
+
 }
+
+// Buscar imagens específicas do artista usando a API de imagens do Vagalume
+async function fetchArtistImagesFromVagalumeAPI(artistId) {
+  if (!artistId) return null;
+  
+  try {
+    // API específica de imagens do Vagalume
+    const imagesUrl = `${VAGALUME_BASE_URL}/image.php?bandID=${artistId}&limit=3`;
+    
+    const response = await fetch(imagesUrl, {
+      headers: {
+        'User-Agent': 'SpotifyTutor/1.0'
+      }
+    });
+    
+    if (!response.ok) {
+      console.log(`❌ Erro na API de imagens Vagalume: ${response.status}`);
+      return null;
+    }
+    
+    const data = await response.json();
+    
+    // Verificar se encontrou imagens
+    if (data.images && Array.isArray(data.images) && data.images.length > 0) {
+      // Pegar a primeira imagem disponível
+      const firstImage = data.images[0];
+      
+      if (firstImage.url) {
+        return firstImage.url;
+      }
+      
+      if (firstImage.thumbUrl) {
+        return firstImage.thumbUrl;
+      }
+    }
+    
+    return null;
+    return null;
+    
+  } catch (error) {
+    console.log(`❌ Erro ao buscar imagens na API Vagalume para ID ${artistId}:`, error);
+    return null;
+  }
+}
+
+// Buscar imagem do artista na API Vagalume (brasileira)
+async function fetchArtistImageFromVagalume(artistName, artistData = null) {
+  if (!artistName) return null;
+  
+  // Função para normalizar URL de imagem
+  function normalizeImageUrl(url) {
+    if (!url) return null;
+    if (url.startsWith('http')) return url;
+    return `https://www.vagalume.com.br${url}`;
+  }
+  
+  // Se já temos dados do artista (vindos da busca), tentar a API de imagens primeiro
+  if (artistData && artistData.vagalume_id) {
+    const highQualityImage = await fetchArtistImagesFromVagalumeAPI(artistData.vagalume_id);
+    if (highQualityImage) {
+      return highQualityImage;
+    }
+  }
+  
+  // Se já temos dados do artista (vindos da busca), usar dados básicos
+  if (artistData) {
+    if (artistData.pic_medium) {
+      const normalizedUrl = normalizeImageUrl(artistData.pic_medium);
+      return normalizedUrl;
+    }
+    
+    if (artistData.pic_small) {
+      const normalizedUrl = normalizeImageUrl(artistData.pic_small);
+      return normalizedUrl;
+    }
+  }
+  
+  try {
+    // API Vagalume para buscar informações do artista
+    const searchUrl = `${VAGALUME_BASE_URL}/search.artmus?q=${encodeURIComponent(artistName)}&limit=1`;
+    
+    const response = await fetch(searchUrl, {
+      headers: {
+        'User-Agent': 'SpotifyTutor/1.0'
+      }
+    });
+    
+    if (!response.ok) {
+      console.log(`❌ Erro na API Vagalume: ${response.status}`);
+      return null;
+    }
+    
+    const data = await response.json();
+    
+    // Verificar se encontrou resultados
+    if (data.response && data.response.docs && data.response.docs.length > 0) {
+      const artist = data.response.docs[0];
+      
+      // Tentar a API de imagens primeiro se temos ID
+      if (artist.id) {
+        const highQualityImage = await fetchArtistImagesFromVagalumeAPI(artist.id);
+        if (highQualityImage) {
+          return highQualityImage;
+        }
+      }
+      
+      // A API Vagalume pode retornar diferentes campos para imagem
+      if (artist.pic_medium) {
+        const normalizedUrl = normalizeImageUrl(artist.pic_medium);
+        return normalizedUrl;
+      }
+      
+      if (artist.pic_small) {
+        const normalizedUrl = normalizeImageUrl(artist.pic_small);
+        return normalizedUrl;
+      }
+      
+      // Se o artista foi encontrado mas sem imagem, tentar buscar pelo ID
+      if (artist.id) {
+        return await fetchArtistDetailsFromVagalume(artist.id);
+      }
+    }
+    
+    return null;
+    
+  } catch (error) {
+    console.log(`❌ Erro ao buscar ${artistName} no Vagalume:`, error);
+    return null;
+  }
+}
+
+// Buscar detalhes completos do artista pelo ID do Vagalume
+async function fetchArtistDetailsFromVagalume(artistId) {
+  try {
+    const detailsUrl = `${VAGALUME_BASE_URL}/search.artmus?artID=${artistId}`;
+    
+    const response = await fetch(detailsUrl, {
+      headers: {
+        'User-Agent': 'SpotifyTutor/1.0'
+      }
+    });
+    
+    if (!response.ok) return null;
+    
+    const data = await response.json();
+    
+    // Função para normalizar URL de imagem
+    function normalizeImageUrl(url) {
+      if (!url) return null;
+      if (url.startsWith('http')) return url;
+      return `https://www.vagalume.com.br${url}`;
+    }
+    
+    if (data.artist && data.artist.pic_medium) {
+      const normalizedUrl = normalizeImageUrl(data.artist.pic_medium);
+      return normalizedUrl;
+    }
+    
+    if (data.artist && data.artist.pic_small) {
+      const normalizedUrl = normalizeImageUrl(data.artist.pic_small);
+      return normalizedUrl;
+    }
+    
+    return null;
+    
+  } catch (error) {
+    console.log('❌ Erro ao buscar detalhes no Vagalume:', error);
+    return null;
+  }
+}
+
+// Gera avatar personalizado para artistas brasileiros
+function generateAvatarForBrazilianArtist(artistName) {
+  if (!artistName) return null;
+  
+  // Gerar hash baseado no nome
+  let hash = 0;
+  for (let i = 0; i < artistName.length; i++) {
+    hash = artistName.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  
+  // Cores inspiradas na bandeira brasileira e cultura
+  const brazilianColors = [
+    ['#00A859', '#FFD700'], // Verde e amarelo
+    ['#1E4B99', '#FFD700'], // Azul e amarelo
+    ['#FF6B35', '#FFD700'], // Laranja e amarelo
+    ['#8B4513', '#F4A460'], // Marrom e bege (terra)
+    ['#228B22', '#ADFF2F'], // Verde escuro e claro
+    ['#4169E1', '#87CEEB'], // Azul real e céu
+    ['#DC143C', '#FFA500'], // Vermelho e laranja
+    ['#800080', '#DDA0DD']  // Roxo e lilás
+  ];
+  
+  const colorIndex = Math.abs(hash) % brazilianColors.length;
+  const [color1, color2] = brazilianColors[colorIndex];
+  
+  // Extrair iniciais
+  const words = artistName.trim().split(/\s+/);
+  let initials;
+  if (words.length === 1) {
+    initials = words[0].substring(0, 2).toUpperCase();
+  } else {
+    initials = words.slice(0, 2).map(word => word[0]).join('').toUpperCase();
+  }
+  
+  // Ícones musicais brasileiros
+  const musicIcons = ['🎵', '🎶', '🎤', '🥁', '🎸', '🎺', '🎷', '🪗'];
+  const iconIndex = Math.abs(hash) % musicIcons.length;
+  const musicIcon = musicIcons[iconIndex];
+  
+  // Criar SVG com estilo brasileiro
+  const svg = `
+    <svg width="120" height="120" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="brazilGrad${Math.abs(hash)}" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:${color1};stop-opacity:1" />
+          <stop offset="100%" style="stop-color:${color2};stop-opacity:1" />
+        </linearGradient>
+        <filter id="shadow${Math.abs(hash)}">
+          <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+        </filter>
+      </defs>
+      
+      <!-- Círculo principal -->
+      <circle cx="60" cy="60" r="55" fill="url(#brazilGrad${Math.abs(hash)})" 
+              stroke="white" stroke-width="3" filter="url(#shadow${Math.abs(hash)})"/>
+      
+      <!-- Círculo interno decorativo -->
+      <circle cx="60" cy="60" r="45" fill="none" stroke="white" 
+              stroke-width="1" opacity="0.3" stroke-dasharray="5,5"/>
+      
+      <!-- Iniciais -->
+      <text x="60" y="50" font-family="Arial, sans-serif" font-size="22" 
+            font-weight="bold" text-anchor="middle" fill="white" dy="0.1em"
+            style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">${initials}</text>
+      
+      <!-- Ícone musical -->
+      <text x="60" y="75" font-family="Arial, sans-serif" font-size="16" 
+            text-anchor="middle" dy="0.1em">${musicIcon}</text>
+      
+      <!-- Pequenos detalhes decorativos -->
+      <circle cx="35" cy="35" r="2" fill="white" opacity="0.7"/>
+      <circle cx="85" cy="35" r="2" fill="white" opacity="0.7"/>
+      <circle cx="35" cy="85" r="2" fill="white" opacity="0.7"/>
+      <circle cx="85" cy="85" r="2" fill="white" opacity="0.7"/>
+    </svg>
+  `;
+  
+  return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`;
+}
+
 
 // Função para mostrar erro da API
 function showAPIError(message) {
@@ -809,7 +1149,7 @@ function showAPIError(message) {
   errorElement.innerHTML = `
     <h4>⚠️ Erro ao carregar dados</h4>
     <p>${escapeHtml(message)}</p>
-    <p>Tente novamente em alguns momentos. A API MusicBrainz pode estar temporariamente indisponível.</p>
+    <p>Tente novamente em alguns momentos. A API Vagalume pode estar temporariamente indisponível.</p>
   `;
   errorElement.style.display = "block";
 }
@@ -1124,4 +1464,59 @@ function showErrorModal(message, title = "Erro!") {
 // Função para modal de informação
 function showInfoModal(message, title = "Informação") {
   showModal(title, message, "info");
+}
+
+// ===== PLAYER VAGALUME =====
+async function showVagalumePlayer(artistName, artistId) {
+  const playerContainer = document.getElementById('vagalume-player-container');
+  const iframe = document.getElementById('vagalume-embedPlayer');
+  
+  try {
+    // Buscar playlists do artista no Vagalume
+    const artistSlug = artistName.toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+    
+    // Tentar diferentes URLs do player do Vagalume
+    const playerUrls = [
+      `https://www.vagalume.com.br/${artistSlug}/player.html`,
+      `https://player.vagalume.com.br/embed/?artist=${encodeURIComponent(artistName)}`,
+      `https://www.vagalume.com.br/player/embed/?search=${encodeURIComponent(artistName)}`
+    ];
+    
+    // Usar a primeira URL como padrão (página do artista no Vagalume)
+    const playerUrl = `https://www.vagalume.com.br/${artistSlug}/`;
+    
+    // Configurar iframe
+    iframe.src = playerUrl;
+    
+    // Mostrar container do player
+    playerContainer.style.display = 'block';
+    
+    // Scroll até o player
+    playerContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    
+    // Atualizar descrição
+    const description = playerContainer.querySelector('.player-description');
+    description.textContent = `Explorando as músicas de ${artistName} no Vagalume:`;
+    
+  } catch (error) {
+    console.log('❌ Erro ao carregar player:', error);
+    
+    // Fallback - abrir em nova aba
+    const vagalumeUrl = `https://www.vagalume.com.br/browse/search.php?q=${encodeURIComponent(artistName)}`;
+    window.open(vagalumeUrl, '_blank');
+  }
+}
+
+// Função para fechar o player
+function closeVagalumePlayer() {
+  const playerContainer = document.getElementById('vagalume-player-container');
+  const iframe = document.getElementById('vagalume-embedPlayer');
+  
+  playerContainer.style.display = 'none';
+  iframe.src = '';
 }
