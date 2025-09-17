@@ -33,7 +33,7 @@ O SpotifyTutor é um curso autoinstrucional desenvolvido para jovens entre 16 e 
 
 ### APIs e Integrações
 
-- **MusicBrainz API:** Integração para busca de artistas brasileiros
+- **Vagalume API:** Integração para busca de artistas brasileiros
 - **Fetch API:** Requisições HTTP assíncronas
 - **LocalStorage:** Persistência de dados do usuário e cache de API
 
@@ -264,52 +264,69 @@ Adotei padrões modernos:
 - [x] Feedback personalizado por desempenho
 - [x] Barra de progresso visual
 - [x] Animações e micro-interações
-- [x] **Integração com API MusicBrainz**
+- [x] **Integração com API Vagalume**
 
 ### 🌐 Integração com API Externa
 
 **Exercício 4: Explorando Artistas Brasileiros**
 
-A aplicação implementa integração com a API MusicBrainz para demonstrar requisições assíncronas e manipulação de dados dinâmicos:
+A aplicação implementa integração com a API Vagalume para demonstrar requisições assíncronas e manipulação de dados dinâmicos:
 
-- **API Utilizada:** [MusicBrainz](https://musicbrainz.org/doc/Development/JSON_Web_Service)
-- **Endpoint:** `/ws/2/artist/?query=country:BR&fmt=json`
+- **API Utilizada:** [Vagalume](https://api.vagalume.com.br/)
+- **Endpoints:** 
+  - `/search.php?art={artist_name}` - Busca de artistas
+  - `/image.php?bandID={artist_id}` - Busca de imagens
 - **Funcionalidades:**
   - Busca artistas brasileiros em tempo real
+  - Busca de fotos de artistas brasileiros com fallback para avatares SVG
   - Loading states profissionais
   - Tratamento de erros robusto
   - Cards interativos com informações detalhadas
-  - Links para perfis oficiais
+  - Links para perfis oficiais no Vagalume
   - Rate limiting respeitoso
-  - Persistência dos dados no localStorage
+  - Sistema de fallback com avatars temáticos
 
 **Características Técnicas:**
 
 ```javascript
 // Exemplo de implementação
-async function fetchBrazilianArtists() {
-  const query = "country:BR AND (type:group OR type:person)";
-  const url = `${MUSICBRAINZ_BASE_URL}/artist/?query=${encodeURIComponent(
-    query
-  )}&fmt=json&limit=10`;
-
-  const response = await fetch(url, {
-    headers: {
-      "User-Agent": "SpotifyTutor/1.0 (educational app)",
-      Accept: "application/json",
-    },
-  });
-
-  // Processamento e exibição dos dados...
+async function fetchArtistImagesFromVagalumeAPI(artists) {
+  const baseUrl = 'https://api.vagalume.com.br';
+  
+  for (const artist of artists) {
+    try {
+      // Buscar informações do artista
+      const searchResponse = await fetch(
+        `${baseUrl}/search.php?art=${encodeURIComponent(artist.slug)}`
+      );
+      const searchData = await searchResponse.json();
+      
+      if (searchData.art?.id) {
+        // Buscar imagem do artista
+        const imageResponse = await fetch(
+          `${baseUrl}/image.php?bandID=${searchData.art.id}`
+        );
+        const imageData = await imageResponse.json();
+        
+        artist.image = imageData.image || generateBrazilianAvatar(artist.name);
+      }
+    } catch (error) {
+      console.log(`Erro ao buscar ${artist.name}:`, error);
+      artist.image = generateBrazilianAvatar(artist.name);
+    }
+  }
 }
 ```
 
 **Benefícios Educativos:**
 
-- Demonstra consumo de APIs REST
-- Exemplo de programação assíncrona
-- Tratamento adequado de estados de carregamento
-- Boas práticas de UX com feedback visual
+- Demonstra consumo de APIs REST brasileiras
+- Exemplo de programação assíncrona com async/await
+- Tratamento adequado de estados de carregamento e erro
+- Sistema de fallback robusto para UX consistente
+- Manipulação de dados JSON e criação dinâmica de elementos DOM
+- Integração com base de dados musical brasileira
+- Boas práticas de rate limiting e tratamento de erros
 
 ## 📂 Estrutura do Projeto
 
