@@ -37,6 +37,18 @@ function initializeApp() {
 
   // Configurar funcionalidades da API
   setupAPIFeatures();
+
+  // Tornar funções globalmente acessíveis
+  window.navigateToSection = navigateToSection;
+  window.toggleLesson = toggleLesson;
+  window.practiceLesson = practiceLesson;
+  window.completeLesson = completeLesson;
+  window.checkAnswer = checkAnswer;
+  window.nextQuestion = nextQuestion;
+  window.playAudio = playAudio;
+  window.resetQuiz = resetQuiz;
+  window.searchArtists = searchArtists;
+  window.playRandomPlaylist = playRandomPlaylist;
 }
 
 function setupEventListeners() {
