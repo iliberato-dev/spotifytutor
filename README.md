@@ -39,6 +39,12 @@ O SpotifyTutor é um curso autoinstrucional desenvolvido para jovens entre 16 e 
 - **CSS Custom Properties:** Sistema de design consistente
 - **Semantic HTML:** Melhor acessibilidade e SEO
 
+### Ferramentas de Design e Otimização
+
+- **IA Generativa:** Criação de logo e elementos visuais
+- **Squoosh (Google):** Otimização e compressão de imagens para web
+- **GitHub Copilot:** Assistência inteligente na escrita de código
+
 ## 🎨 Design System
 
 ### Paleta de Cores (Conforme Especificação)
@@ -165,6 +171,35 @@ Adotei padrões modernos:
 - "Sugestões de exercícios interativos sobre curadoria musical"
 
 **Justificativa:** A IA ajudou a organizar o conteúdo de forma didática e sugerir exercícios relevantes ao tema.
+
+### Criação de Assets Visuais
+
+**Utilização:** Geração de logo e elementos visuais
+**Ferramentas IA utilizadas:**
+
+- **Logo SpotifyTutor:** Criada com IA generativa para manter identidade visual moderna
+- **Ícones e elementos gráficos:** Refinados com prompts específicos para design jovem
+
+**Justificativa:** A IA permitiu criar elementos visuais profissionais alinhados com a identidade do projeto, mesmo sem recursos de design especializado.
+
+## 🔧 Ferramentas de Otimização
+
+### Squoosh (Google)
+
+**Utilização:** Otimização de imagens para web
+**URL:** [https://squoosh.app/](https://squoosh.app/)
+
+**Processo aplicado:**
+- **Compressão inteligente** de imagens PNG/JPG
+- **Conversão para formatos modernos** quando apropriado
+- **Redução de tamanho** mantendo qualidade visual
+- **Otimização para diferentes resoluções** (1x, 2x, 3x)
+
+**Resultados obtidos:**
+- **Redução significativa** no tamanho dos arquivos
+- **Melhoria na performance** de carregamento
+- **Manutenção da qualidade visual** em todas as resoluções
+- **Compatibilidade** com navegadores modernos
 
 ## 🎯 Desafios e Soluções
 
