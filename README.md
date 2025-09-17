@@ -156,7 +156,6 @@ Adotei padrões modernos:
 **Utilização:** Ideação de conteúdo e estruturação pedagógica
 **Prompts Utilizados:**
 
-- "Como estruturar um curso sobre criação de playlists para jovens?"
 - "Quais são as melhores práticas de UX para aplicações educativas?"
 - "Sugestões de exercícios interativos sobre curadoria musical"
 
