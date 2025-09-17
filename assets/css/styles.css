@@ -395,7 +395,7 @@ body {
 .lesson-header {
   display: flex;
   align-items: flex-start;
-  gap: var(--spacing-lg);
+  /* gap: var(--spacing-lg); */
   padding: var(--spacing-xl);
   cursor: pointer;
   transition: background-color var(--transition-fast);
@@ -1191,6 +1191,14 @@ body {
   .artist-name {
     font-size: var(--font-size-base);
   }
+
+  .lesson-header {
+    padding: 0;  
+}
+
+.lesson-details {
+    padding: var(--spacing-xl) 0;
+}
 }
 
 /* Dark theme adjustments for API */
