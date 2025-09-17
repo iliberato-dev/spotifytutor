@@ -926,7 +926,12 @@ function practiceLesson(lessonId) {
     4: "Incrível! O design é fundamental para atrair ouvintes!",
   };
 
-  showModal('Prática em Andamento!', practiceMessages[lessonId], 'practice', '🎯');
+  showModal(
+    "Prática em Andamento!",
+    practiceMessages[lessonId],
+    "practice",
+    "🎯"
+  );
 }
 
 // Função para completar lição
@@ -952,7 +957,7 @@ function completeLesson(lessonId) {
     4: "Perfeito! Sua playlist está pronta para conquistar o mundo!",
   };
 
-  showModal('Lição Completa!', completionMessages[lessonId], 'complete', '🎉');
+  showModal("Lição Completa!", completionMessages[lessonId], "complete", "🎉");
 }
 
 // Demonstrações interativas
@@ -1015,60 +1020,63 @@ function previewPlaylist() {
 
   if (name && desc) {
     const previewMessage = `Prévia da Playlist:\n\nTítulo: ${name}\nDescrição: ${desc}\n\nSua playlist está ficando incrível!`;
-    showModal('Prévia da Playlist', previewMessage, 'success', '🎵');
+    showModal("Prévia da Playlist", previewMessage, "success", "🎵");
     updateLessonProgress(4, 75);
   } else {
-    showWarningModal("Preencha o nome e descrição da playlist primeiro!", "Informações Incompletas");
+    showWarningModal(
+      "Preencha o nome e descrição da playlist primeiro!",
+      "Informações Incompletas"
+    );
   }
 }
 
-// ===== SISTEMA DE MODAL ===== 
+// ===== SISTEMA DE MODAL =====
 
 // Função para mostrar modal
-function showModal(title, message, type = 'info', icon = '') {
-  const modal = document.getElementById('notification-modal');
-  const modalTitle = document.getElementById('modal-title');
-  const modalMessage = document.getElementById('modal-message');
-  const modalIcon = document.getElementById('modal-icon');
-  const modalContent = modal.querySelector('.modal-content');
-  
+function showModal(title, message, type = "info", icon = "") {
+  const modal = document.getElementById("notification-modal");
+  const modalTitle = document.getElementById("modal-title");
+  const modalMessage = document.getElementById("modal-message");
+  const modalIcon = document.getElementById("modal-icon");
+  const modalContent = modal.querySelector(".modal-content");
+
   // Definir ícones padrão baseado no tipo
   const icons = {
-    success: '🎉',
-    warning: '⚠️',
-    error: '❌',
-    info: 'ℹ️',
-    practice: '🎯',
-    complete: '✅'
+    success: "🎉",
+    warning: "⚠️",
+    error: "❌",
+    info: "ℹ️",
+    practice: "🎯",
+    complete: "✅",
   };
-  
+
   // Configurar conteúdo
   modalTitle.textContent = title;
   modalMessage.textContent = message;
   modalIcon.textContent = icon || icons[type] || icons.info;
-  
+
   // Remover classes anteriores e adicionar nova
-  modalContent.className = 'modal-content';
+  modalContent.className = "modal-content";
   modalContent.classList.add(`modal-${type}`);
-  
+
   // Mostrar modal
-  modal.style.display = 'flex';
-  
+  modal.style.display = "flex";
+
   // Focar no botão de fechar para acessibilidade
   setTimeout(() => {
-    const closeBtn = modal.querySelector('.modal-close');
+    const closeBtn = modal.querySelector(".modal-close");
     if (closeBtn) closeBtn.focus();
   }, 100);
-  
+
   // Fechar com ESC
   const handleEscape = (e) => {
-    if (e.key === 'Escape') {
+    if (e.key === "Escape") {
       closeModal();
-      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener("keydown", handleEscape);
     }
   };
-  document.addEventListener('keydown', handleEscape);
-  
+  document.addEventListener("keydown", handleEscape);
+
   // Fechar clicando fora do modal
   modal.onclick = (e) => {
     if (e.target === modal) {
@@ -1079,29 +1087,29 @@ function showModal(title, message, type = 'info', icon = '') {
 
 // Função para fechar modal
 function closeModal() {
-  const modal = document.getElementById('notification-modal');
-  modal.style.display = 'none';
-  
+  const modal = document.getElementById("notification-modal");
+  modal.style.display = "none";
+
   // Remover event listeners
   modal.onclick = null;
 }
 
 // Função para modal de sucesso
-function showSuccessModal(message, title = 'Sucesso!') {
-  showModal(title, message, 'success');
+function showSuccessModal(message, title = "Sucesso!") {
+  showModal(title, message, "success");
 }
 
 // Função para modal de aviso
-function showWarningModal(message, title = 'Atenção!') {
-  showModal(title, message, 'warning');
+function showWarningModal(message, title = "Atenção!") {
+  showModal(title, message, "warning");
 }
 
 // Função para modal de erro
-function showErrorModal(message, title = 'Erro!') {
-  showModal(title, message, 'error');
+function showErrorModal(message, title = "Erro!") {
+  showModal(title, message, "error");
 }
 
 // Função para modal de informação
-function showInfoModal(message, title = 'Informação') {
-  showModal(title, message, 'info');
+function showInfoModal(message, title = "Informação") {
+  showModal(title, message, "info");
 }

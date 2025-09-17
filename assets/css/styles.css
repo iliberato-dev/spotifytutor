@@ -1458,13 +1458,13 @@ body {
     width: 95%;
     margin: var(--spacing-md);
   }
-  
+
   .modal-header,
   .modal-body,
   .modal-footer {
     padding: var(--spacing-md);
   }
-  
+
   .modal-icon {
     font-size: 36px;
   }
