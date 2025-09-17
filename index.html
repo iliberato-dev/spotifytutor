@@ -141,57 +141,321 @@
         <div class="container">
           <h2 class="section-title">📚 Suas Lições</h2>
           <div class="lessons-grid">
-            <article class="lesson-card">
-              <div class="lesson-icon">🎯</div>
-              <h3>1. Definindo o Conceito</h3>
-              <p>
-                Todo hit começa com uma ideia! Aprenda a escolher o tema
-                perfeito para sua playlist.
-              </p>
-              <ul class="lesson-topics">
-                <li>Escolha de gêneros musicais</li>
-                <li>Definição de mood/vibe</li>
-                <li>Público-alvo da playlist</li>
-              </ul>
+            <article class="lesson-card" data-lesson="1">
+              <div class="lesson-header" onclick="toggleLesson(1)">
+                <div class="lesson-icon">🎯</div>
+                <div class="lesson-title-group">
+                  <h3>1. Definindo o Conceito</h3>
+                  <p class="lesson-summary">
+                    Todo hit começa com uma ideia! Aprenda a escolher o tema
+                    perfeito para sua playlist.
+                  </p>
+                </div>
+                <div class="lesson-status">
+                  <div class="lesson-progress" id="progress-1">
+                    <div class="progress-bar-lesson" style="width: 0%"></div>
+                  </div>
+                  <button class="expand-btn" aria-label="Expandir lição">
+                    <span class="expand-icon">+</span>
+                  </button>
+                </div>
+              </div>
+
+              <div
+                class="lesson-content"
+                id="lesson-content-1"
+                style="display: none"
+              >
+                <div class="lesson-details">
+                  <h4>📋 O que você vai aprender:</h4>
+                  <ul class="lesson-topics">
+                    <li>✓ Escolha de gêneros musicais</li>
+                    <li>✓ Definição de mood/vibe</li>
+                    <li>✓ Público-alvo da playlist</li>
+                  </ul>
+
+                  <div class="interactive-demo">
+                    <h4>🎮 Demonstração Interativa:</h4>
+                    <div class="spotify-mock">
+                      <div class="mock-header">🎵 Spotify - Criar Playlist</div>
+                      <div class="mock-content">
+                        <label for="genre-select">Escolha um gênero:</label>
+                        <select
+                          id="genre-select"
+                          onchange="updatePlaylistDemo(1)"
+                        >
+                          <option value="">Selecione...</option>
+                          <option value="pop">Pop</option>
+                          <option value="rock">Rock</option>
+                          <option value="jazz">Jazz</option>
+                          <option value="electronic">Eletrônica</option>
+                        </select>
+                        <div id="demo-result-1" class="demo-result"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="lesson-actions">
+                    <button
+                      class="btn-lesson btn-practice"
+                      onclick="practiceLesson(1)"
+                    >
+                      🎯 Praticar
+                    </button>
+                    <button
+                      class="btn-lesson btn-complete"
+                      onclick="completeLesson(1)"
+                    >
+                      ✓ Marcar como Completa
+                    </button>
+                  </div>
+                </div>
+              </div>
             </article>
 
-            <article class="lesson-card">
-              <div class="lesson-icon">🔍</div>
-              <h3>2. Garimpando Músicas</h3>
-              <p>
-                Descubra onde encontrar as melhores tracks e como usar as
-                ferramentas do Spotify.
-              </p>
-              <ul class="lesson-topics">
-                <li>Função de busca avançada</li>
-                <li>Playlists recomendadas</li>
-                <li>Discover Weekly e Release Radar</li>
-              </ul>
+            <article class="lesson-card" data-lesson="2">
+              <div class="lesson-header" onclick="toggleLesson(2)">
+                <div class="lesson-icon">🔍</div>
+                <div class="lesson-title-group">
+                  <h3>2. Garimpando Músicas</h3>
+                  <p class="lesson-summary">
+                    Descubra onde encontrar as melhores tracks e como usar as
+                    ferramentas do Spotify.
+                  </p>
+                </div>
+                <div class="lesson-status">
+                  <div class="lesson-progress" id="progress-2">
+                    <div class="progress-bar-lesson" style="width: 0%"></div>
+                  </div>
+                  <button class="expand-btn" aria-label="Expandir lição">
+                    <span class="expand-icon">+</span>
+                  </button>
+                </div>
+              </div>
+
+              <div
+                class="lesson-content"
+                id="lesson-content-2"
+                style="display: none"
+              >
+                <div class="lesson-details">
+                  <h4>📋 O que você vai aprender:</h4>
+                  <ul class="lesson-topics">
+                    <li>✓ Função de busca avançada</li>
+                    <li>✓ Playlists recomendadas</li>
+                    <li>✓ Discover Weekly e Release Radar</li>
+                  </ul>
+
+                  <div class="interactive-demo">
+                    <h4>🎮 Simulador de Busca:</h4>
+                    <div class="spotify-mock">
+                      <div class="mock-header">🔍 Spotify - Buscar Música</div>
+                      <div class="mock-content">
+                        <input
+                          type="text"
+                          placeholder="Digite o nome de uma música..."
+                          id="search-input"
+                          onkeyup="simulateSearch(this.value)"
+                        />
+                        <div id="search-results" class="search-results"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="lesson-actions">
+                    <button
+                      class="btn-lesson btn-practice"
+                      onclick="practiceLesson(2)"
+                    >
+                      🎯 Praticar
+                    </button>
+                    <button
+                      class="btn-lesson btn-complete"
+                      onclick="completeLesson(2)"
+                    >
+                      ✓ Marcar como Completa
+                    </button>
+                  </div>
+                </div>
+              </div>
             </article>
 
-            <article class="lesson-card">
-              <div class="lesson-icon">⚡</div>
-              <h3>3. Criando Fluxo</h3>
-              <p>
-                A ordem das músicas é tudo! Aprenda a criar uma experiência
-                envolvente.
-              </p>
-              <ul class="lesson-topics">
-                <li>Transições entre músicas</li>
-                <li>Controle de energia/BPM</li>
-                <li>Duração ideal da playlist</li>
-              </ul>
+            <article class="lesson-card" data-lesson="3">
+              <div class="lesson-header" onclick="toggleLesson(3)">
+                <div class="lesson-icon">⚡</div>
+                <div class="lesson-title-group">
+                  <h3>3. Criando Fluxo</h3>
+                  <p class="lesson-summary">
+                    A ordem das músicas é tudo! Aprenda a criar uma experiência
+                    envolvente.
+                  </p>
+                </div>
+                <div class="lesson-status">
+                  <div class="lesson-progress" id="progress-3">
+                    <div class="progress-bar-lesson" style="width: 0%"></div>
+                  </div>
+                  <button class="expand-btn" aria-label="Expandir lição">
+                    <span class="expand-icon">+</span>
+                  </button>
+                </div>
+              </div>
+
+              <div
+                class="lesson-content"
+                id="lesson-content-3"
+                style="display: none"
+              >
+                <div class="lesson-details">
+                  <h4>📋 O que você vai aprender:</h4>
+                  <ul class="lesson-topics">
+                    <li>✓ Transições entre músicas</li>
+                    <li>✓ Controle de energia/BPM</li>
+                    <li>✓ Duração ideal da playlist</li>
+                  </ul>
+
+                  <div class="interactive-demo">
+                    <h4>🎮 Organizador de Playlist:</h4>
+                    <div class="spotify-mock">
+                      <div class="mock-header">
+                        ⚡ Spotify - Organizar Playlist
+                      </div>
+                      <div class="mock-content">
+                        <div class="playlist-simulator">
+                          <div class="song-item" draggable="true">
+                            🎵 Música Suave - BPM 70
+                          </div>
+                          <div class="song-item" draggable="true">
+                            🎵 Música Animada - BPM 120
+                          </div>
+                          <div class="song-item" draggable="true">
+                            🎵 Música Intensa - BPM 140
+                          </div>
+                        </div>
+                        <p class="demo-tip">
+                          💡 Arraste as músicas para reorganizar o fluxo de
+                          energia!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="lesson-actions">
+                    <button
+                      class="btn-lesson btn-practice"
+                      onclick="practiceLesson(3)"
+                    >
+                      🎯 Praticar
+                    </button>
+                    <button
+                      class="btn-lesson btn-complete"
+                      onclick="completeLesson(3)"
+                    >
+                      ✓ Marcar como Completa
+                    </button>
+                  </div>
+                </div>
+              </div>
             </article>
 
-            <article class="lesson-card">
-              <div class="lesson-icon">🎨</div>
-              <h3>4. Design e Compartilhamento</h3>
-              <p>Finalize com estilo e espalhe sua criação pelo mundo!</p>
-              <ul class="lesson-topics">
-                <li>Escolha de capa personalizada</li>
-                <li>Título e descrição matadores</li>
-                <li>Compartilhamento estratégico</li>
-              </ul>
+            <article class="lesson-card" data-lesson="4">
+              <div class="lesson-header" onclick="toggleLesson(4)">
+                <div class="lesson-icon">🎨</div>
+                <div class="lesson-title-group">
+                  <h3>4. Design e Compartilhamento</h3>
+                  <p class="lesson-summary">
+                    Finalize com estilo e espalhe sua criação pelo mundo!
+                  </p>
+                </div>
+                <div class="lesson-status">
+                  <div class="lesson-progress" id="progress-4">
+                    <div class="progress-bar-lesson" style="width: 0%"></div>
+                  </div>
+                  <button class="expand-btn" aria-label="Expandir lição">
+                    <span class="expand-icon">+</span>
+                  </button>
+                </div>
+              </div>
+
+              <div
+                class="lesson-content"
+                id="lesson-content-4"
+                style="display: none"
+              >
+                <div class="lesson-details">
+                  <h4>📋 O que você vai aprender:</h4>
+                  <ul class="lesson-topics">
+                    <li>✓ Escolha de capa personalizada</li>
+                    <li>✓ Título e descrição matadores</li>
+                    <li>✓ Compartilhamento estratégico</li>
+                  </ul>
+
+                  <div class="interactive-demo">
+                    <h4>🎮 Editor de Playlist:</h4>
+                    <div class="spotify-mock">
+                      <div class="mock-header">
+                        🎨 Spotify - Editar Playlist
+                      </div>
+                      <div class="mock-content">
+                        <div class="playlist-editor">
+                          <input
+                            type="text"
+                            placeholder="Nome da playlist..."
+                            id="playlist-name"
+                          />
+                          <textarea
+                            placeholder="Descrição da playlist..."
+                            id="playlist-desc"
+                          ></textarea>
+                          <div class="cover-selector">
+                            <span>Escolha uma capa:</span>
+                            <div class="cover-options">
+                              <div
+                                class="cover-option"
+                                onclick="selectCover(1)"
+                              >
+                                🎵
+                              </div>
+                              <div
+                                class="cover-option"
+                                onclick="selectCover(2)"
+                              >
+                                🎸
+                              </div>
+                              <div
+                                class="cover-option"
+                                onclick="selectCover(3)"
+                              >
+                                🎤
+                              </div>
+                            </div>
+                          </div>
+                          <button
+                            class="preview-btn"
+                            onclick="previewPlaylist()"
+                          >
+                            👁️ Visualizar
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="lesson-actions">
+                    <button
+                      class="btn-lesson btn-practice"
+                      onclick="practiceLesson(4)"
+                    >
+                      🎯 Praticar
+                    </button>
+                    <button
+                      class="btn-lesson btn-complete"
+                      onclick="completeLesson(4)"
+                    >
+                      ✓ Marcar como Completa
+                    </button>
+                  </div>
+                </div>
+              </div>
             </article>
           </div>
           <div class="lesson-actions">
@@ -281,7 +545,7 @@
               </div>
               <button
                 class="btn btn-exercise"
-                onclick="checkAnswer(2, ['a', 'b', 'd'], 'multiple')"
+                onclick="checkAnswer(2, ['d'], 'multiple')"
               >
                 Responder
               </button>

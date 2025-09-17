@@ -8,6 +8,12 @@ const appState = {
     3: { attempts: 3, completed: false, correct: false },
     4: { completed: false, apiData: [] },
   },
+  lessons: {
+    1: { completed: false, progress: 0, expanded: false },
+    2: { completed: false, progress: 0, expanded: false },
+    3: { completed: false, progress: 0, expanded: false },
+    4: { completed: false, progress: 0, expanded: false },
+  },
   score: 0,
 };
 
@@ -414,11 +420,13 @@ function saveProgress() {
     "spotifyTutorProgress",
     JSON.stringify(appState.exercises)
   );
+  localStorage.setItem("spotifyTutorLessons", JSON.stringify(appState.lessons));
   localStorage.setItem("spotifyTutorScore", appState.score.toString());
 }
 
 function loadProgress() {
   const savedProgress = localStorage.getItem("spotifyTutorProgress");
+  const savedLessons = localStorage.getItem("spotifyTutorLessons");
   const savedScore = localStorage.getItem("spotifyTutorScore");
 
   if (savedProgress) {
@@ -443,6 +451,48 @@ function loadProgress() {
         // Só desabilitar exercícios que têm o conceito de tentativas
         if (exercise.attempts !== undefined) {
           disableExercise(exerciseId);
+        }
+      }
+    });
+  }
+
+  if (savedLessons) {
+    appState.lessons = JSON.parse(savedLessons);
+
+    // Restaurar estado das lições
+    Object.keys(appState.lessons).forEach((lessonId) => {
+      const lesson = appState.lessons[lessonId];
+
+      // Restaurar progresso
+      const progressBar = document.querySelector(
+        `#progress-${lessonId} .progress-bar-lesson`
+      );
+      if (progressBar) {
+        progressBar.style.width = `${lesson.progress}%`;
+      }
+
+      // Restaurar estado de conclusão
+      if (lesson.completed) {
+        const completeBtn = document.querySelector(
+          `[data-lesson="${lessonId}"] .btn-complete`
+        );
+        if (completeBtn) {
+          completeBtn.textContent = "✅ Completa";
+          completeBtn.classList.add("completed");
+          completeBtn.disabled = true;
+        }
+      }
+
+      // Restaurar estado expandido
+      if (lesson.expanded) {
+        const content = document.getElementById(`lesson-content-${lessonId}`);
+        const card = document.querySelector(`[data-lesson="${lessonId}"]`);
+        const expandIcon = card?.querySelector(".expand-icon");
+
+        if (content && card && expandIcon) {
+          content.style.display = "block";
+          card.classList.add("expanded");
+          expandIcon.textContent = "−";
         }
       }
     });
@@ -814,5 +864,158 @@ function showAPIDemo() {
     // Marcar exercício como completo
     appState.exercises[4].completed = true;
     saveProgress();
+  }
+}
+
+// ===== SISTEMA DE LIÇÕES INTERATIVAS =====
+
+// Função para alternar expansão de lições
+function toggleLesson(lessonId) {
+  const content = document.getElementById(`lesson-content-${lessonId}`);
+  const card = document.querySelector(`[data-lesson="${lessonId}"]`);
+  const expandIcon = card.querySelector(".expand-icon");
+
+  if (appState.lessons[lessonId].expanded) {
+    // Colapsar
+    content.style.display = "none";
+    card.classList.remove("expanded");
+    expandIcon.textContent = "+";
+    appState.lessons[lessonId].expanded = false;
+  } else {
+    // Expandir
+    content.style.display = "block";
+    card.classList.add("expanded");
+    expandIcon.textContent = "−";
+    appState.lessons[lessonId].expanded = true;
+
+    // Incrementar progresso ao expandir
+    if (appState.lessons[lessonId].progress < 25) {
+      updateLessonProgress(lessonId, 25);
+    }
+  }
+
+  saveProgress();
+}
+
+// Função para atualizar progresso da lição
+function updateLessonProgress(lessonId, progress) {
+  appState.lessons[lessonId].progress = Math.max(
+    appState.lessons[lessonId].progress,
+    progress
+  );
+  const progressBar = document.querySelector(
+    `#progress-${lessonId} .progress-bar-lesson`
+  );
+  if (progressBar) {
+    progressBar.style.width = `${appState.lessons[lessonId].progress}%`;
+  }
+  saveProgress();
+}
+
+// Função para praticar lição
+function practiceLesson(lessonId) {
+  updateLessonProgress(lessonId, 75);
+
+  const practiceMessages = {
+    1: "🎯 Ótimo! Você está explorando os conceitos fundamentais de criação de playlists!",
+    2: "🔍 Excelente! Continue explorando as ferramentas de busca do Spotify!",
+    3: "⚡ Perfeito! O fluxo da playlist é essencial para uma boa experiência!",
+    4: "🎨 Incrível! O design é fundamental para atrair ouvintes!",
+  };
+
+  alert(practiceMessages[lessonId]);
+}
+
+// Função para completar lição
+function completeLesson(lessonId) {
+  appState.lessons[lessonId].completed = true;
+  updateLessonProgress(lessonId, 100);
+
+  const completeBtn = document.querySelector(
+    `[data-lesson="${lessonId}"] .btn-complete`
+  );
+  if (completeBtn) {
+    completeBtn.textContent = "✅ Completa";
+    completeBtn.classList.add("completed");
+    completeBtn.disabled = true;
+  }
+
+  saveProgress();
+
+  const completionMessages = {
+    1: "🎉 Parabéns! Você dominou os conceitos de criação de playlists!",
+    2: "🎉 Excelente! Agora você sabe garimpar as melhores músicas!",
+    3: "🎉 Fantástico! Você entende como criar um fluxo envolvente!",
+    4: "🎉 Perfeito! Sua playlist está pronta para conquistar o mundo!",
+  };
+
+  alert(completionMessages[lessonId]);
+}
+
+// Demonstrações interativas
+function updatePlaylistDemo(lessonId) {
+  const select = document.getElementById("genre-select");
+  const result = document.getElementById("demo-result-1");
+
+  if (select.value) {
+    const suggestions = {
+      pop: "💡 Sugestão: Combine hits atuais com clássicos do pop!",
+      rock: "💡 Sugestão: Misture rock clássico com indie moderno!",
+      jazz: "💡 Sugestão: Varie entre jazz suave e experimental!",
+      electronic: "💡 Sugestão: Combine house, techno e ambient!",
+    };
+
+    result.innerHTML = suggestions[select.value];
+    updateLessonProgress(1, 50);
+  }
+}
+
+function simulateSearch(query) {
+  const results = document.getElementById("search-results");
+
+  if (query.length > 2) {
+    const mockResults = [
+      `🎵 ${query} - Artista Principal`,
+      `🎵 ${query} (Remix) - DJ Mix`,
+      `🎵 Similar a "${query}" - Artista Similar`,
+    ];
+
+    results.innerHTML = mockResults
+      .map(
+        (result) =>
+          `<div style="padding: 4px 0; border-bottom: 1px solid #444;">${result}</div>`
+      )
+      .join("");
+
+    updateLessonProgress(2, 50);
+  } else {
+    results.innerHTML = "";
+  }
+}
+
+function selectCover(coverId) {
+  // Remover seleção anterior
+  document.querySelectorAll(".cover-option").forEach((option) => {
+    option.classList.remove("selected");
+  });
+
+  // Adicionar seleção atual
+  document
+    .querySelectorAll(".cover-option")
+    [coverId - 1].classList.add("selected");
+  updateLessonProgress(4, 50);
+}
+
+function previewPlaylist() {
+  const name = document.getElementById("playlist-name").value;
+  const desc = document.getElementById("playlist-desc").value;
+
+  if (name && desc) {
+    alert(
+      `🎵 Prévia da Playlist:\n\nTítulo: ${name}\nDescrição: ${desc}\n\n✨ Sua playlist está ficando incrível!`
+    );
+    updateLessonProgress(4, 75);
+  } else {
+    alert("⚠️ Preencha o nome e descrição da playlist primeiro!");
   }
 }
