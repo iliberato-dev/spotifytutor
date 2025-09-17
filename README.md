@@ -5,7 +5,7 @@ Uma aplicação web moderna e responsiva que ensina jovens como criar playlists 
 ## 🚀 Demonstração
 
 - **URL da Aplicação:** [Em breve - será publicado no Vercel/Netlify]
-- **Repositório:** [Link do repositório GitHub]
+- **Repositório:** [https://github.com/iliberato-dev/spotifytutor](https://github.com/iliberato-dev/spotifytutor)
 
 ## 📋 Sobre o Projeto
 
@@ -240,8 +240,8 @@ spotify-tutor/
 1. **Clone o repositório:**
 
 ```bash
-git clone [url-do-repositorio]
-cd spotify-tutor
+git clone https://github.com/iliberato-dev/spotifytutor.git
+cd spotifytutor
 ```
 
 2. **Abra a aplicação:**
