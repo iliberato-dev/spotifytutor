@@ -3,8 +3,8 @@
 Uma aplicação web moderna e responsiva que ensina jovens como criar playlists temáticas no Spotify de forma envolvente e interativa.
 
 <div align="center">
-  <img src="./assets/images/" alt="Tela inicial do SpotifyTutor no modo claro, exibindo interface com cards temáticos, barra de navegação superior e cores azul marinho e verde esmeralda. Ambiente limpo e moderno, com tom motivacional." width="45%" />
-  <img src="./assets/images/" alt="Tela inicial do SpotifyTutor no modo escuro, interface semelhante ao modo claro, porém com fundo escuro e elementos em destaque verde esmeralda. Atmosfera acolhedora e jovem." width="45%" />
+  <img src="./assets/images/Captura de tela claro.png" alt="Interface do SpotifyTutor no modo claro, mostrando tela de criação de playlist do Spotify." width="45%" />
+  <img src="./assets/images/Captura de tela escuro.png" alt="Interface do SpotifyTutor no modo escuro, mostrando tela de criação de playlist do Spotify." width="45%" />
 </div>
 
 ## 🚀 Demonstração
