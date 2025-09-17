@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Curso autoinstrucional: Como criar uma playlist temática no Spotify"
+      author="Isaque Liberato"
+    />
+    <link
+      rel="shortcut icon"
+      href="assets/images/icon.png"
+      type="image/x-icon"
+    />
+    <title>SpotifyTutor - Crie Playlists Incríveis</title>
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="header">
+      <nav class="nav">
+        <div class="nav-brand">
+          <img
+            src="assets/images/icon.png"
+            alt="icone SpotifyTutor"
+            width="40"
+            height="40"
+          />
+          <h1>SpotifyTutor</h1>
+        </div>
+
+        <!-- Menu Desktop -->
+        <ul class="nav-menu">
+          <li>
+            <a href="#intro" class="nav-link active" data-section="intro"
+              >Início</a
+            >
+          </li>
+          <li>
+            <a href="#lessons" class="nav-link" data-section="lessons"
+              >Lições</a
+            >
+          </li>
+          <li>
+            <a href="#exercises" class="nav-link" data-section="exercises"
+              >Exercícios</a
+            >
+          </li>
+          <li>
+            <a href="#results" class="nav-link" data-section="results"
+              >Resultado</a
+            >
+          </li>
+        </ul>
+
+        <div class="nav-controls">
+          <button class="theme-toggle" aria-label="Alternar tema">🌙</button>
+          <button class="hamburger-btn" aria-label="Menu" aria-expanded="false">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+          </button>
+        </div>
+      </nav>
+
+      <!-- Menu Mobile -->
+      <div class="mobile-menu">
+        <ul class="mobile-menu-list">
+          <li>
+            <a
+              href="#intro"
+              class="mobile-nav-link active"
+              data-section="intro"
+            >
+              <span class="mobile-nav-icon">🏠</span>
+              Início
+            </a>
+          </li>
+          <li>
+            <a href="#lessons" class="mobile-nav-link" data-section="lessons">
+              <span class="mobile-nav-icon">📚</span>
+              Lições
+            </a>
+          </li>
+          <li>
+            <a
+              href="#exercises"
+              class="mobile-nav-link"
+              data-section="exercises"
+            >
+              <span class="mobile-nav-icon">🧠</span>
+              Exercícios
+            </a>
+          </li>
+          <li>
+            <a href="#results" class="mobile-nav-link" data-section="results">
+              <span class="mobile-nav-icon">🏆</span>
+              Resultado
+            </a>
+          </li>
+        </ul>
+      </div>
+    </header>
+
+    <main class="main">
+      <!-- Seção Introdução -->
+      <section id="intro" class="section active">
+        <div class="container">
+          <div class="hero">
+            <h2 class="hero-title">Domine a Arte das Playlists no Spotify</h2>
+            <p class="hero-subtitle">
+              Aprenda a criar playlists temáticas que vão bombar e conquistar
+              seus amigos! Um curso prático e direto para você se tornar um
+              curador musical de respeito.
+            </p>
+            <div class="hero-image">
+              <img
+                src="assets/images/spotify-hero.svg"
+                alt="Interface do Spotify com playlist"
+                class="hero-img"
+              />
+            </div>
+            <button
+              class="btn btn-primary"
+              onclick="navigateToSection('lessons')"
+            >
+              Começar Agora 🚀
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Seção Lições -->
+      <section id="lessons" class="section">
+        <div class="container">
+          <h2 class="section-title">📚 Suas Lições</h2>
+          <div class="lessons-grid">
+            <article class="lesson-card">
+              <div class="lesson-icon">🎯</div>
+              <h3>1. Definindo o Conceito</h3>
+              <p>
+                Todo hit começa com uma ideia! Aprenda a escolher o tema
+                perfeito para sua playlist.
+              </p>
+              <ul class="lesson-topics">
+                <li>Escolha de gêneros musicais</li>
+                <li>Definição de mood/vibe</li>
+                <li>Público-alvo da playlist</li>
+              </ul>
+            </article>
+
+            <article class="lesson-card">
+              <div class="lesson-icon">🔍</div>
+              <h3>2. Garimpando Músicas</h3>
+              <p>
+                Descubra onde encontrar as melhores tracks e como usar as
+                ferramentas do Spotify.
+              </p>
+              <ul class="lesson-topics">
+                <li>Função de busca avançada</li>
+                <li>Playlists recomendadas</li>
+                <li>Discover Weekly e Release Radar</li>
+              </ul>
+            </article>
+
+            <article class="lesson-card">
+              <div class="lesson-icon">⚡</div>
+              <h3>3. Criando Fluxo</h3>
+              <p>
+                A ordem das músicas é tudo! Aprenda a criar uma experiência
+                envolvente.
+              </p>
+              <ul class="lesson-topics">
+                <li>Transições entre músicas</li>
+                <li>Controle de energia/BPM</li>
+                <li>Duração ideal da playlist</li>
+              </ul>
+            </article>
+
+            <article class="lesson-card">
+              <div class="lesson-icon">🎨</div>
+              <h3>4. Design e Compartilhamento</h3>
+              <p>Finalize com estilo e espalhe sua criação pelo mundo!</p>
+              <ul class="lesson-topics">
+                <li>Escolha de capa personalizada</li>
+                <li>Título e descrição matadores</li>
+                <li>Compartilhamento estratégico</li>
+              </ul>
+            </article>
+          </div>
+          <div class="lesson-actions">
+            <button
+              class="btn btn-secondary"
+              onclick="navigateToSection('intro')"
+            >
+              ← Voltar
+            </button>
+            <button
+              class="btn btn-primary"
+              onclick="navigateToSection('exercises')"
+            >
+              Fazer Exercícios →
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Seção Exercícios -->
+      <section id="exercises" class="section">
+        <div class="container">
+          <h2 class="section-title">🧠 Teste Seus Conhecimentos</h2>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="exercises-container">
+            <!-- Exercício 1: Escolha Única -->
+            <div class="exercise-card" id="exercise1">
+              <h3 class="exercise-title">Exercício 1: Escolha Única</h3>
+              <p class="exercise-question">
+                Qual é o número ideal de músicas para uma playlist temática de
+                festa?
+              </p>
+              <div class="exercise-options">
+                <label class="option">
+                  <input type="radio" name="q1" value="a" />
+                  <span class="option-text">10-15 músicas</span>
+                </label>
+                <label class="option">
+                  <input type="radio" name="q1" value="b" />
+                  <span class="option-text">30-50 músicas</span>
+                </label>
+                <label class="option">
+                  <input type="radio" name="q1" value="c" />
+                  <span class="option-text">100+ músicas</span>
+                </label>
+                <label class="option">
+                  <input type="radio" name="q1" value="d" />
+                  <span class="option-text">Não importa a quantidade</span>
+                </label>
+              </div>
+              <button
+                class="btn btn-exercise"
+                onclick="checkAnswer(1, 'b', 'single')"
+              >
+                Responder
+              </button>
+              <div class="feedback" id="feedback1"></div>
+              <div class="attempts" id="attempts1">Tentativas restantes: 3</div>
+            </div>
+
+            <!-- Exercício 2: Múltipla Escolha -->
+            <div class="exercise-card" id="exercise2">
+              <h3 class="exercise-title">Exercício 2: Múltipla Escolha</h3>
+              <p class="exercise-question">
+                Quais ferramentas do Spotify ajudam a descobrir músicas novas?
+                (Selecione todas as corretas)
+              </p>
+              <div class="exercise-options">
+                <label class="option">
+                  <input type="checkbox" name="q2" value="a" />
+                  <span class="option-text">Discover Weekly</span>
+                </label>
+                <label class="option">
+                  <input type="checkbox" name="q2" value="b" />
+                  <span class="option-text">Release Radar</span>
+                </label>
+                <label class="option">
+                  <input type="checkbox" name="q2" value="c" />
+                  <span class="option-text">Modo offline</span>
+                </label>
+                <label class="option">
+                  <input type="checkbox" name="q2" value="d" />
+                  <span class="option-text">Daily Mix</span>
+                </label>
+              </div>
+              <button
+                class="btn btn-exercise"
+                onclick="checkAnswer(2, ['a', 'b', 'd'], 'multiple')"
+              >
+                Responder
+              </button>
+              <div class="feedback" id="feedback2"></div>
+              <div class="attempts" id="attempts2">Tentativas restantes: 3</div>
+            </div>
+
+            <!-- Exercício 3: Combobox -->
+            <div class="exercise-card" id="exercise3">
+              <h3 class="exercise-title">Exercício 3: Menu Suspenso</h3>
+              <p class="exercise-question">
+                Qual é a melhor estratégia para organizar as músicas em uma
+                playlist de treino?
+              </p>
+              <div class="exercise-options">
+                <select name="q3" id="q3Select" class="exercise-select">
+                  <option value="">Escolha uma opção...</option>
+                  <option value="a">Ordem alfabética por artista</option>
+                  <option value="b">
+                    Das mais lentas para as mais rápidas
+                  </option>
+                  <option value="c">
+                    Crescente em energia: aquecimento → pico → relaxamento
+                  </option>
+                  <option value="d">Aleatória, sem critério específico</option>
+                </select>
+              </div>
+              <button
+                class="btn btn-exercise"
+                onclick="checkAnswer(3, 'c', 'select')"
+              >
+                Responder
+              </button>
+              <div class="feedback" id="feedback3"></div>
+              <div class="attempts" id="attempts3">Tentativas restantes: 3</div>
+            </div>
+          </div>
+          <div class="exercise-actions">
+            <button
+              class="btn btn-secondary"
+              onclick="navigateToSection('lessons')"
+            >
+              ← Voltar às Lições
+            </button>
+            <button
+              class="btn btn-primary"
+              id="finishBtn"
+              onclick="navigateToSection('results')"
+              disabled
+            >
+              Ver Resultado →
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Seção Resultados -->
+      <section id="results" class="section">
+        <div class="container">
+          <h2 class="section-title">🏆 Seu Resultado</h2>
+          <div class="results-card">
+            <div class="score-display">
+              <div class="score-circle">
+                <span class="score-number" id="finalScore">0</span>
+                <span class="score-total">/3</span>
+              </div>
+              <h3 class="score-title" id="scoreTitle">Calculando...</h3>
+            </div>
+            <div class="score-details" id="scoreDetails">
+              <p>Aguarde enquanto processamos seu resultado...</p>
+            </div>
+            <div class="results-actions">
+              <button class="btn btn-secondary" onclick="resetExercises()">
+                🔄 Refazer Exercícios
+              </button>
+              <button
+                class="btn btn-primary"
+                onclick="navigateToSection('intro')"
+              >
+                🏠 Início
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>
+          &copy; 2025 SpotifyTutor - Desafio Front-End SENAI By Isaque Liberato
+        </p>
+      </div>
+    </footer>
+
+    <script src="assets/js/app.js"></script>
+  </body>
+</html>
