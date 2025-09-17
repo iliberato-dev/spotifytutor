@@ -29,15 +29,21 @@ O SpotifyTutor é um curso autoinstrucional desenvolvido para jovens entre 16 e 
 
 - **HTML5:** Estruturação semântica com tags apropriadas (`<main>`, `<section>`, `<nav>`, `<article>`)
 - **CSS3:** Estilização avançada com CSS Grid, Flexbox e variáveis CSS
-- **JavaScript (ES6+):** Lógica de aplicação, manipulação do DOM e persistência de dados
+- **JavaScript (ES6+):** Lógica de aplicação, manipulação do DOM, requisições assíncronas e persistência de dados
+
+### APIs e Integrações
+
+- **MusicBrainz API:** Integração para busca de artistas brasileiros
+- **Fetch API:** Requisições HTTP assíncronas
+- **LocalStorage:** Persistência de dados do usuário e cache de API
 
 ### Ferramentas e Padrões
 
 - **Google Fonts (Inter):** Tipografia moderna e legível
 - **SVG:** Imagens vetoriais otimizadas para web
-- **LocalStorage:** Persistência de dados do usuário
 - **CSS Custom Properties:** Sistema de design consistente
 - **Semantic HTML:** Melhor acessibilidade e SEO
+- **Progressive Enhancement:** Funcionalidade básica sem dependências externas
 
 ### Ferramentas de Design e Otimização
 
@@ -258,7 +264,52 @@ Adotei padrões modernos:
 - [x] Feedback personalizado por desempenho
 - [x] Barra de progresso visual
 - [x] Animações e micro-interações
-- [x] Preparação para API externa
+- [x] **Integração com API MusicBrainz**
+
+### 🌐 Integração com API Externa
+
+**Exercício 4: Explorando Artistas Brasileiros**
+
+A aplicação implementa integração com a API MusicBrainz para demonstrar requisições assíncronas e manipulação de dados dinâmicos:
+
+- **API Utilizada:** [MusicBrainz](https://musicbrainz.org/doc/Development/JSON_Web_Service)
+- **Endpoint:** `/ws/2/artist/?query=country:BR&fmt=json`
+- **Funcionalidades:**
+  - Busca artistas brasileiros em tempo real
+  - Loading states profissionais
+  - Tratamento de erros robusto
+  - Cards interativos com informações detalhadas
+  - Links para perfis oficiais
+  - Rate limiting respeitoso
+  - Persistência dos dados no localStorage
+
+**Características Técnicas:**
+
+```javascript
+// Exemplo de implementação
+async function fetchBrazilianArtists() {
+  const query = "country:BR AND (type:group OR type:person)";
+  const url = `${MUSICBRAINZ_BASE_URL}/artist/?query=${encodeURIComponent(
+    query
+  )}&fmt=json&limit=10`;
+
+  const response = await fetch(url, {
+    headers: {
+      "User-Agent": "SpotifyTutor/1.0 (educational app)",
+      Accept: "application/json",
+    },
+  });
+
+  // Processamento e exibição dos dados...
+}
+```
+
+**Benefícios Educativos:**
+
+- Demonstra consumo de APIs REST
+- Exemplo de programação assíncrona
+- Tratamento adequado de estados de carregamento
+- Boas práticas de UX com feedback visual
 
 ## 📂 Estrutura do Projeto
 
@@ -316,7 +367,6 @@ Este projeto me permitiu:
 
 Para futuras iterações, planejo:
 
-- [ ] Integração com API do Spotify para dados reais
 - [ ] Sistema de autenticação de usuário
 - [ ] Exercícios adaptativos baseados no desempenho
 - [ ] Compartilhamento de resultados nas redes sociais

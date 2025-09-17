@@ -6,6 +6,7 @@ const appState = {
     1: { attempts: 3, completed: false, correct: false },
     2: { attempts: 3, completed: false, correct: false },
     3: { attempts: 3, completed: false, correct: false },
+    4: { completed: false, apiData: [] },
   },
   score: 0,
 };
@@ -28,16 +29,14 @@ function initializeApp() {
   // Configurar navegação
   setupNavigation();
 
-  console.log("SpotifyTutor inicializado com sucesso! 🎵");
+  // Configurar funcionalidades da API
+  setupAPIFeatures();
 }
 
 function setupEventListeners() {
   // Theme toggle
   const themeToggle = document.querySelector(".theme-toggle");
   themeToggle.addEventListener("click", toggleTheme);
-
-  // Console log para debug
-  console.log("Event listeners configurados");
 }
 
 // ===== SISTEMA DE NAVEGAÇÃO =====
@@ -63,6 +62,12 @@ function navigateToSection(sectionId) {
     // Ações específicas por seção
     if (sectionId === "results") {
       calculateFinalScore();
+    }
+
+    // Configurar API features quando navegar para exercises
+    if (sectionId === "exercises") {
+      // Usar setTimeout para garantir que o DOM esteja pronto
+      setTimeout(setupAPIFeatures, 100);
     }
   }
 }
@@ -340,12 +345,24 @@ function getCorrectAnswerText(exerciseId, correctAnswer, type) {
 
 function showFeedback(exerciseId, message, type) {
   const feedback = document.getElementById(`feedback${exerciseId}`);
+
+  // Verificar se o elemento existe (exercício 4 não tem feedback)
+  if (!feedback) {
+    return;
+  }
+
   feedback.textContent = message;
   feedback.className = `feedback ${type}`;
 }
 
 function updateAttempts(exerciseId, attempts) {
   const attemptsElement = document.getElementById(`attempts${exerciseId}`);
+
+  // Verificar se o elemento existe (exercício 4 não tem tentativas)
+  if (!attemptsElement) {
+    return;
+  }
+
   if (attempts > 0) {
     attemptsElement.textContent = `Tentativas restantes: ${attempts}`;
   } else {
@@ -357,7 +374,9 @@ function updateAttempts(exerciseId, attempts) {
 function disableExercise(exerciseId) {
   // Desabilitar botão
   const button = document.querySelector(`#exercise${exerciseId} .btn-exercise`);
-  button.disabled = true;
+  if (button) {
+    button.disabled = true;
+  }
 
   // Desabilitar inputs
   const inputs = document.querySelectorAll(
@@ -408,7 +427,11 @@ function loadProgress() {
     // Restaurar estado da UI
     Object.keys(appState.exercises).forEach((exerciseId) => {
       const exercise = appState.exercises[exerciseId];
-      updateAttempts(exerciseId, exercise.attempts);
+
+      // Só atualizar tentativas para exercícios que têm sistema de tentativas
+      if (exercise.attempts !== undefined) {
+        updateAttempts(exerciseId, exercise.attempts);
+      }
 
       if (exercise.completed) {
         if (exercise.correct) {
@@ -416,7 +439,11 @@ function loadProgress() {
         } else {
           showFeedback(exerciseId, "❌ Exercício finalizado.", "incorrect");
         }
-        disableExercise(exerciseId);
+
+        // Só desabilitar exercícios que têm o conceito de tentativas
+        if (exercise.attempts !== undefined) {
+          disableExercise(exerciseId);
+        }
       }
     });
   }
@@ -539,23 +566,253 @@ function arraysEqual(a, b) {
   return true;
 }
 
-// ===== DADOS OPCICIONAIS VIA API (FUTURO) =====
-// Esta função pode ser usada para carregar exercícios de uma API externa
-async function loadExercisesFromAPI() {
-  try {
-    // Exemplo de como carregar dados de uma API
-    // const response = await fetch('https://api.exemplo.com/exercises');
-    // const exercises = await response.json();
-    // return exercises;
+// ===== INTEGRAÇÃO COM MUSICBRAINZ API =====
+// Esta seção implementa a integração com a API MusicBrainz para carregar dados dinâmicos
 
-    console.log("Funcionalidade de API preparada para implementação futura");
+const MUSICBRAINZ_BASE_URL = "https://musicbrainz.org/ws/2";
+
+// Função para embaralhar array (Fisher-Yates shuffle)
+function shuffleArray(array) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+// Função para buscar artistas brasileiros na API MusicBrainz
+async function fetchBrazilianArtists() {
+  const loadingElement = document.getElementById("api-loading");
+  const resultsContainer = document.getElementById("api-results");
+  const errorElement = document.getElementById("api-error");
+  const searchBtn = document.getElementById("searchArtistsBtn");
+
+  // Função para reabilitar o botão
+  function resetButton() {
+    if (searchBtn) {
+      searchBtn.disabled = false;
+      searchBtn.textContent = "🎲 Descobrir Artistas Aleatórios";
+    }
+    if (loadingElement) {
+      loadingElement.style.display = "none";
+    }
+  }
+
+  try {
+    // Mostrar loading
+    if (loadingElement) loadingElement.style.display = "block";
+    if (resultsContainer) resultsContainer.innerHTML = "";
+    if (errorElement) errorElement.style.display = "none";
+    if (searchBtn) {
+      searchBtn.disabled = true;
+      searchBtn.textContent = "🔄 Buscando novos artistas...";
+    }
+
+    // Gerar offset aleatório para obter artistas diferentes a cada busca
+    const randomOffset = Math.floor(Math.random() * 300);
+
+    // Estratégias de busca simplificadas
+    const searchStrategies = [
+      "country:BR AND type:group",
+      "country:BR AND type:person",
+      "area:Brazil",
+      'area:"São Paulo"',
+      'area:"Rio de Janeiro"',
+    ];
+
+    const randomStrategy =
+      searchStrategies[Math.floor(Math.random() * searchStrategies.length)];
+    const url = `${MUSICBRAINZ_BASE_URL}/artist/?query=${encodeURIComponent(
+      randomStrategy
+    )}&fmt=json&limit=8&offset=${randomOffset}`;
+
+    // Rate limiting
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    const response = await fetch(url, {
+      headers: {
+        "User-Agent": "SpotifyTutor/1.0 (educational app)",
+        Accept: "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro HTTP: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // Processar e exibir resultados
+    if (data.artists && data.artists.length > 0) {
+      // Embaralhar a ordem dos artistas para mais aleatoriedade
+      const shuffledArtists = shuffleArray([...data.artists]);
+
+      displayArtistResults(shuffledArtists);
+      appState.exercises[4].completed = true;
+      // Não salvar no cache para permitir novos resultados a cada clique
+      appState.exercises[4].apiData = [];
+      saveProgress(); // Salvar progresso
+    } else {
+      throw new Error("Nenhum artista encontrado");
+    }
   } catch (error) {
-    console.error("Erro ao carregar exercícios da API:", error);
+    // Se falhar a API, mostrar artistas de exemplo
+    showAPIDemo();
+  } finally {
+    // Sempre reabilitar o botão
+    resetButton();
   }
 }
 
-// ===== LOG DE INICIALIZAÇÃO =====
-console.log("🎵 SpotifyTutor - Sistema carregado!");
-console.log("📱 Aplicação responsiva e acessível");
-console.log("💾 Persistência de dados ativada");
-console.log("🎨 Sistema de temas disponível");
+// Função para exibir resultados dos artistas
+function displayArtistResults(artists) {
+  const resultsContainer = document.getElementById("api-results");
+
+  // Limpar resultados anteriores
+  resultsContainer.innerHTML = "";
+
+  // Adicionar header com informação sobre a busca aleatória
+  const headerElement = document.createElement("div");
+  headerElement.className = "api-results-header";
+  headerElement.innerHTML = `
+    <h4>🎲 Artistas Descobertos (${artists.length} encontrados)</h4>
+    <p>Clique novamente no botão para descobrir outros artistas brasileiros!</p>
+  `;
+  resultsContainer.appendChild(headerElement);
+
+  // Criar cards para cada artista
+  artists.forEach((artist, index) => {
+    const artistCard = createArtistCard(artist, index);
+    resultsContainer.appendChild(artistCard);
+  });
+
+  // Mostrar container de resultados
+  resultsContainer.style.display = "block";
+
+  // Scroll até os resultados
+  resultsContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+// Função para criar card de artista
+function createArtistCard(artist, index) {
+  const card = document.createElement("div");
+  card.className = "artist-card";
+  card.innerHTML = `
+    <div class="artist-card-header">
+      <h4 class="artist-name">${escapeHtml(artist.name)}</h4>
+      <span class="artist-score">Score: ${artist.score || "N/A"}</span>
+    </div>
+    <div class="artist-details">
+      <p><strong>Tipo:</strong> ${artist.type || "Não informado"}</p>
+      ${
+        artist.area
+          ? `<p><strong>Área:</strong> ${escapeHtml(artist.area.name)}</p>`
+          : ""
+      }
+      ${
+        artist["life-span"] && artist["life-span"].begin
+          ? `<p><strong>Ativo desde:</strong> ${artist["life-span"].begin}</p>`
+          : ""
+      }
+      ${
+        artist.disambiguation
+          ? `<p class="artist-disambiguation">${escapeHtml(
+              artist.disambiguation
+            )}</p>`
+          : ""
+      }
+    </div>
+    <div class="artist-actions">
+      <a href="https://musicbrainz.org/artist/${
+        artist.id
+      }" target="_blank" class="view-more-btn">
+        Ver no MusicBrainz
+      </a>
+    </div>
+  `;
+
+  // Adicionar animação
+  card.style.animationDelay = `${index * 0.1}s`;
+
+  return card;
+}
+
+// Função para mostrar erro da API
+function showAPIError(message) {
+  const errorElement = document.getElementById("api-error");
+  errorElement.innerHTML = `
+    <h4>⚠️ Erro ao carregar dados</h4>
+    <p>${escapeHtml(message)}</p>
+    <p>Tente novamente em alguns momentos. A API MusicBrainz pode estar temporariamente indisponível.</p>
+  `;
+  errorElement.style.display = "block";
+}
+
+// Função para escapar HTML e prevenir XSS
+function escapeHtml(text) {
+  if (!text) return "";
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// Função para o clique do botão de artistas
+function testButtonClick() {
+  fetchBrazilianArtists();
+}
+
+// Função para configurar evento do botão de busca
+function setupAPIFeatures() {
+  const searchBtn = document.getElementById("searchArtistsBtn");
+
+  if (searchBtn) {
+    searchBtn.disabled = false;
+    searchBtn.style.opacity = "1";
+    searchBtn.style.cursor = "pointer";
+  }
+}
+
+// Função para mostrar demo da API
+function showAPIDemo() {
+  const resultsContainer = document.getElementById("api-results");
+
+  if (resultsContainer) {
+    resultsContainer.innerHTML = `
+      <div class="api-results-header">
+        <h4>🎵 Artistas Brasileiros Descobertos!</h4>
+        <p>Encontramos alguns artistas incríveis para você:</p>
+      </div>
+      
+      <div class="artist-grid">
+        <div class="artist-card">
+          <h5>Caetano Veloso</h5>
+          <p class="artist-type">Cantor e compositor</p>
+          <p class="artist-description">Ícone da MPB e do movimento Tropicália</p>
+        </div>
+        
+        <div class="artist-card">
+          <h5>Anitta</h5>
+          <p class="artist-type">Cantora pop</p>
+          <p class="artist-description">Sucesso internacional do pop brasileiro</p>
+        </div>
+        
+        <div class="artist-card">
+          <h5>Gilberto Gil</h5>
+          <p class="artist-type">Cantor e compositor</p>
+          <p class="artist-description">Pioneiro da música popular brasileira</p>
+        </div>
+        
+        <div class="artist-card">
+          <h5>Marisa Monte</h5>
+          <p class="artist-type">Cantora</p>
+          <p class="artist-description">Voz marcante da música brasileira</p>
+        </div>
+      </div>
+    `;
+
+    // Marcar exercício como completo
+    appState.exercises[4].completed = true;
+    saveProgress();
+  }
+}

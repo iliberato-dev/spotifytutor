@@ -318,6 +318,51 @@
               <div class="feedback" id="feedback3"></div>
               <div class="attempts" id="attempts3">Tentativas restantes: 3</div>
             </div>
+
+            <!-- Exercício 4: API Integration -->
+            <div class="exercise-card" id="exercise4">
+              <h3 class="exercise-title">
+                Exercício 4: Explorando Artistas Brasileiros
+              </h3>
+              <p class="exercise-question">
+                Descubra novos artistas brasileiros através da nossa integração
+                com a base de dados MusicBrainz. Esta funcionalidade demonstra o
+                uso de APIs para carregar dados dinâmicos.
+              </p>
+
+              <div class="api-controls">
+                <button
+                  class="btn btn-exercise"
+                  id="searchArtistsBtn"
+                  onclick="testButtonClick()"
+                >
+                  🎲 Descobrir Artistas Aleatórios
+                </button>
+                <p class="api-description">
+                  Clique no botão acima para descobrir artistas brasileiros
+                  aleatórios diretamente da base de dados MusicBrainz. A cada
+                  clique, novos artistas diferentes são carregados!
+                </p>
+              </div>
+
+              <!-- Loading State -->
+              <div class="api-loading" id="api-loading" style="display: none">
+                <div class="loading-spinner"></div>
+                <p>Carregando artistas brasileiros...</p>
+              </div>
+
+              <!-- Error State -->
+              <div class="api-error" id="api-error" style="display: none">
+                <!-- Erro será inserido dinamicamente aqui -->
+              </div>
+
+              <!-- Results Container -->
+              <div class="api-results-container">
+                <div class="api-results" id="api-results" style="display: none">
+                  <!-- Resultados serão inseridos dinamicamente aqui -->
+                </div>
+              </div>
+            </div>
           </div>
           <div class="exercise-actions">
             <button
