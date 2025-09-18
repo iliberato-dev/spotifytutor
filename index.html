@@ -595,18 +595,49 @@
               </p>
 
               <div class="api-controls">
-                <button
-                  class="btn btn-exercise"
-                  id="searchArtistsBtn"
-                  onclick="testButtonClick()"
-                >
-                  🎲 Descobrir Artistas Aleatórios
-                </button>
-                <p class="api-description">
-                  Clique no botão acima para descobrir artistas brasileiros
-                  aleatórios diretamente da base de dados MusicBrainz. A cada
-                  clique, novos artistas diferentes são carregados!
-                </p>
+                <!-- Campo de busca personalizada -->
+                <div class="search-container">
+                  <h4>🔍 Buscar Artista Específico</h4>
+                  <div class="search-input-group">
+                    <input 
+                      type="text" 
+                      id="artistSearchInput" 
+                      class="search-input" 
+                      placeholder="Digite o nome do artista (ex: Anitta, Caetano Veloso...)"
+                      onkeypress="handleSearchKeyPress(event)"
+                    >
+                    <button 
+                      class="btn btn-search" 
+                      onclick="searchSpecificArtist()"
+                    >
+                      🎯 Buscar
+                    </button>
+                  </div>
+                  <p class="search-description">
+                    Digite o nome de qualquer artista brasileiro para ver suas informações e ouvir suas músicas.
+                  </p>
+                </div>
+
+                <!-- Divisor -->
+                <div class="divider">
+                  <span>ou</span>
+                </div>
+
+                <!-- Busca aleatória -->
+                <div class="random-search-container">
+                  <button
+                    class="btn btn-exercise"
+                    id="searchArtistsBtn"
+                    onclick="testButtonClick()"
+                  >
+                    🎲 Descobrir Artistas Aleatórios
+                  </button>
+                  <p class="api-description">
+                    Clique no botão acima para descobrir artistas brasileiros
+                    aleatórios diretamente da base de dados Vagalume. A cada
+                    clique, novos artistas diferentes são carregados!
+                  </p>
+                </div>
               </div>
 
               <!-- Loading State -->
