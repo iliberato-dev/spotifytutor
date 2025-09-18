@@ -844,15 +844,15 @@ function createArtistCard(artist, index) {
       <span class="artist-score">Score: ${artist.score || "N/A"}</span>
     </div>
     <div class="artist-details">
-      <p><strong>Tipo:</strong> ${artist.type || "Artista"}</p>
+      <p><strong>Tipo:</strong> ${typeof artist.type === 'object' ? 'Artista' : (artist.type || "Artista")}</p>
       ${
         artist.area
-          ? `<p><strong>Área:</strong> ${escapeHtml(artist.area.name)}</p>`
+          ? `<p><strong>Área:</strong> ${escapeHtml(typeof artist.area === 'object' ? artist.area.name : artist.area)}</p>`
           : ""
       }
       ${
         artist.genre
-          ? `<p><strong>Gênero:</strong> ${escapeHtml(artist.genre)}</p>`
+          ? `<p><strong>Gênero:</strong> ${escapeHtml(typeof artist.genre === 'object' ? 'Rock/Pop Brasileiro' : artist.genre)}</p>`
           : ""
       }
       ${
@@ -863,7 +863,7 @@ function createArtistCard(artist, index) {
       ${
         artist.disambiguation
           ? `<p class="artist-disambiguation">${escapeHtml(
-              artist.disambiguation
+              typeof artist.disambiguation === 'object' ? 'Artista Brasileiro' : artist.disambiguation
             )}</p>`
           : ""
       }
@@ -1520,3 +1520,250 @@ function closeVagalumePlayer() {
   playerContainer.style.display = 'none';
   iframe.src = '';
 }
+
+// ===== BUSCA ESPECÍFICA DE ARTISTA =====
+async function searchSpecificArtist() {
+  const input = document.getElementById('artistSearchInput');
+  const artistName = input.value.trim();
+  
+  if (!artistName) {
+    showInfoModal('Por favor, digite o nome de um artista para buscar.', 'Campo Vazio');
+    input.focus();
+    return;
+  }
+  
+  // Elementos DOM
+  const loadingElement = document.getElementById("api-loading");
+  const resultsContainer = document.getElementById("api-results");
+  const errorElement = document.getElementById("api-error");
+  const searchBtn = document.querySelector('.btn-search');
+  
+  // Função para reset dos elementos
+  function resetSearchState() {
+    if (searchBtn) {
+      searchBtn.disabled = false;
+      searchBtn.textContent = "🎯 Buscar";
+    }
+    if (loadingElement) {
+      loadingElement.style.display = "none";
+    }
+  }
+  
+  try {
+    // Mostrar loading
+    if (loadingElement) loadingElement.style.display = "block";
+    if (resultsContainer) resultsContainer.innerHTML = "";
+    if (errorElement) errorElement.style.display = "none";
+    if (searchBtn) {
+      searchBtn.disabled = true;
+      searchBtn.textContent = "🔄 Buscando...";
+    }
+    
+    // Buscar artista específico no Vagalume
+    const artistData = await fetchSpecificArtistFromVagalume(artistName);
+    
+    if (artistData) {
+      // Exibir resultado do artista encontrado
+      displaySingleArtistResult(artistData);
+      
+      // Marcar exercício como completo
+      appState.exercises[4].completed = true;
+      saveProgress();
+      
+      // Limpar campo de busca
+      input.value = '';
+      
+    } else {
+      // Mostrar erro se artista não foi encontrado
+      if (errorElement) {
+        errorElement.innerHTML = `
+          <div class="error-content">
+            <h4>🔍 Artista não encontrado</h4>
+            <p>O artista "${escapeHtml(artistName)}" não foi encontrado no Vagalume.</p>
+            <p>Tente verificar a grafia ou buscar um artista brasileiro diferente.</p>
+          </div>
+        `;
+        errorElement.style.display = "block";
+      }
+    }
+    
+  } catch (error) {
+    console.log('❌ Erro na busca específica:', error);
+    if (errorElement) {
+      errorElement.innerHTML = `
+        <div class="error-content">
+          <h4>❌ Erro na busca</h4>
+          <p>Ocorreu um erro ao buscar o artista. Verifique sua conexão e tente novamente.</p>
+        </div>
+      `;
+      errorElement.style.display = "block";
+    }
+  } finally {
+    resetSearchState();
+  }
+}
+
+// Função para buscar artista específico no Vagalume
+async function fetchSpecificArtistFromVagalume(artistName) {
+  try {
+    // Criar múltiplas variações do nome para busca
+    const originalName = artistName.toLowerCase().trim();
+    
+    // Função para criar slug básico
+    function createSlug(name) {
+      return name
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+        .replace(/[^a-z0-9\s]/g, '') // Remove caracteres especiais exceto números
+        .replace(/\s+/g, '-') // Substitui espaços por hífens
+        .replace(/-+/g, '-') // Remove hífens duplos
+        .replace(/^-|-$/g, ''); // Remove hífens do início e fim
+    }
+    
+    // Criar variações do nome para busca
+    const searchVariations = [
+      createSlug(originalName), // CPM 22 → cpm-22
+      originalName.replace(/\s+/g, '-'), // CPM 22 → cpm-22
+      originalName.replace(/\s+/g, ''), // CPM 22 → cpm22
+      originalName.replace(/\s+/g, '').replace(/[^a-z0-9]/g, ''), // CPM 22 → cpm22
+      originalName.replace(/\s+/g, '_'), // CPM 22 → cpm_22
+      createSlug(originalName).replace(/(\d+)/g, '-$1'), // cpm-22 → cpm-22
+      createSlug(originalName).replace(/-/g, ''), // cpm-22 → cpm22
+      // Variações específicas para bandas com números
+      originalName.toLowerCase().replace(/\s+/g, ''),
+      originalName.toLowerCase().replace(/\s+/g, '-'),
+      originalName.toLowerCase().replace(/[^a-z0-9]/g, '')
+    ];
+    
+    // Remover duplicatas e vazios
+    const uniqueVariations = [...new Set(searchVariations)].filter(v => v && v.length > 0);
+    
+    console.log(`🔍 Buscando: "${artistName}"`);
+    console.log(`📋 Variações para testar:`, uniqueVariations);
+    
+    // Testar cada variação
+    for (const variation of uniqueVariations) {
+      const testUrl = `https://www.vagalume.com.br/${variation}/index.js`;
+      console.log(`� Testando: ${variation} → ${testUrl}`);
+      
+      try {
+        const response = await fetch(testUrl);
+        
+        if (response.ok) {
+          const data = await response.json();
+          
+          if (data.artist) {
+            console.log(`✅ ENCONTRADO! Variação "${variation}" funcionou`);
+            
+            // Construir URLs completas para as imagens
+            let picMedium = null;
+            let picSmall = null;
+            
+            if (data.artist.pic_medium) {
+              picMedium = data.artist.pic_medium.startsWith('http') 
+                ? data.artist.pic_medium 
+                : `https://www.vagalume.com.br${data.artist.pic_medium}`;
+            }
+            
+            if (data.artist.pic_small) {
+              picSmall = data.artist.pic_small.startsWith('http') 
+                ? data.artist.pic_small 
+                : `https://www.vagalume.com.br${data.artist.pic_small}`;
+            }
+            
+            // Formatar dados do artista
+            const artist = {
+              id: data.artist.id,
+              name: data.artist.name || artistName,
+              url: `https://www.vagalume.com.br/${variation}/`,
+              pic_small: picSmall,
+              pic_medium: picMedium,
+              // Tratar gênero corretamente
+              genre: (() => {
+                if (data.artist.genre) {
+                  if (Array.isArray(data.artist.genre)) {
+                    return data.artist.genre.map(g => typeof g === 'object' ? g.name : g).join(', ');
+                  } else if (typeof data.artist.genre === 'object') {
+                    return data.artist.genre.name || 'Rock/Pop Brasileiro';
+                  } else {
+                    return data.artist.genre;
+                  }
+                }
+                return 'Rock/Pop Brasileiro';
+              })(),
+              type: 'Banda',
+              score: data.artist.views || 'N/A',
+              views: data.artist.views,
+              rank_position: data.artist.rank ? data.artist.rank.pos : null
+            };
+            
+            console.log(`🎵 Dados do artista:`, artist);
+            return artist;
+          }
+        } else {
+          console.log(`❌ ${variation}: ${response.status}`);
+        }
+      } catch (varError) {
+        console.log(`❌ Erro em ${variation}:`, varError.message);
+        continue;
+      }
+    }
+    
+    console.log(`💔 Nenhuma variação funcionou para: "${artistName}"`);
+    return null;
+    
+  } catch (error) {
+    console.log(`❌ Erro geral ao buscar "${artistName}":`, error);
+    return null;
+  }
+}
+
+// Função para exibir resultado de artista único
+function displaySingleArtistResult(artist) {
+  const resultsContainer = document.getElementById("api-results");
+  
+  // Criar header para resultado único
+  const header = `
+    <div class="api-results-header">
+      <h4>🎯 Resultado da Busca</h4>
+      <p>Artista encontrado: <strong>${escapeHtml(artist.name)}</strong></p>
+    </div>
+  `;
+  
+  // Criar card do artista
+  const artistCard = createArtistCard(artist, 0);
+  
+  // Limpar e inserir conteúdo
+  resultsContainer.innerHTML = header;
+  resultsContainer.appendChild(artistCard);
+  
+  // Mostrar container de resultados
+  resultsContainer.style.display = "block";
+  
+  // Buscar e atualizar imagem do artista
+  fetchArtistImageFromVagalume(artist.name, artist).then(imageUrl => {
+    const imgElement = artistCard.querySelector('.artist-img');
+    if (imageUrl && imgElement) {
+      const testImg = new Image();
+      testImg.onload = function() {
+        imgElement.src = imageUrl;
+      };
+      testImg.src = imageUrl;
+    }
+  });
+  
+  // Scroll até os resultados
+  resultsContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+// Função para lidar com Enter no campo de busca
+function handleSearchKeyPress(event) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    searchSpecificArtist();
+  }
+}
+
+// Adicionar função global para ser acessível pelo HTML
+window.searchSpecificArtist = searchSpecificArtist;
+window.handleSearchKeyPress = handleSearchKeyPress;
